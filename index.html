@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ハクの大冒険 〜黄金のまたたびを求めて〜 ver1.1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--gold:#FFD700;--orange:#FF8C42;--dark-orange:#E05A00;--warm:#FFE4B5;}
+body{font-family:'Zen Maru Gothic',sans-serif;background:#0a0a14;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden;}
+#app{width:100%;max-width:420px;height:100vh;max-height:900px;position:relative;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ===== TITLE ===== */
+#title-screen{background:url('ChatGPT Image Apr 24, 2026, 11_00_52 PM.png') center/cover no-repeat;align-items:center;justify-content:flex-end;gap:0;justify-content:space-between;}
+#title-screen::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1) 60%,rgba(0,0,0,.7) 100%);z-index:0;pointer-events:none;}
+.title-stars{display:none;}
+.title-logo{text-align:center;margin-top:44px;z-index:1;padding:0 10px;}
+.title-logo .sub1{font-size:11px;color:#e8d8a0;letter-spacing:4px;margin-bottom:6px;text-shadow:0 1px 6px rgba(0,0,0,.8);}
+.title-logo h1{font-size:46px;font-weight:900;color:var(--gold);text-shadow:0 0 32px rgba(255,215,0,.8),0 0 8px rgba(255,180,0,.6),3px 3px 0 #5a2d00;animation:titleBob 3s ease-in-out infinite;line-height:1.1;}
+.title-logo .sub2{font-size:13px;color:#f0d870;margin-top:6px;letter-spacing:2px;text-shadow:0 1px 8px rgba(0,0,0,.9);}
+@keyframes titleBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.title-haku{display:none;}
+@keyframes heroFloat{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-12px) rotate(3deg);}}
+.title-bottom{z-index:1;display:flex;flex-direction:column;align-items:center;padding-bottom:36px;width:100%;}
+.title-tagline{font-size:14px;color:#f0e8d0;text-align:center;padding:12px 28px;line-height:1.8;z-index:1;text-shadow:1px 1px 6px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.8);background:rgba(0,0,0,.25);border-radius:12px;margin:0 20px 16px;}
+.btn-start{padding:16px 48px;font-size:22px;font-weight:900;font-family:'Zen Maru Gothic',sans-serif;background:linear-gradient(135deg,#ff9a2e,var(--dark-orange));color:white;border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 0 #903000,0 8px 30px rgba(255,140,66,.6),0 0 0 3px rgba(255,220,100,.3);z-index:1;animation:pulse 2s ease-in-out infinite;transition:all .1s;}
+@keyframes pulse{0%,100%{box-shadow:0 6px 0 #903000,0 8px 24px rgba(255,140,66,.4),0 0 0 3px rgba(255,220,100,.2);}50%{box-shadow:0 6px 0 #903000,0 8px 48px rgba(255,140,66,.8),0 0 0 5px rgba(255,220,100,.5);}}
+.btn-start:active{transform:translateY(4px);box-shadow:0 2px 0 #903000;}
+.bgm-btn{position:absolute;bottom:16px;right:14px;z-index:10;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);color:white;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+/* ===== STORY ===== */
+#story-screen{background:#0a0a1e;align-items:center;justify-content:center;padding:0;}
+.story-box{width:100%;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.story-bg{position:absolute;inset:0;z-index:0;transition:opacity .8s;}
+.story-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:0;}
+.story-scene{display:none;}
+@keyframes sceneFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.story-window{background:rgba(0,0,0,.88);border-top:3px solid var(--gold);padding:18px 20px 14px;min-height:160px;position:relative;}
+.story-speaker{font-size:12px;font-weight:900;color:var(--gold);margin-bottom:6px;letter-spacing:1px;}
+.story-text{font-size:14px;color:white;line-height:1.75;min-height:60px;}
+.story-next{position:absolute;bottom:14px;right:18px;color:var(--gold);font-size:12px;animation:blink .8s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.story-progress{position:absolute;top:14px;right:18px;font-size:11px;color:rgba(255,255,255,.4);}
+.story-cats-row{display:flex;justify-content:center;gap:14px;padding:10px 0 4px;}
+
+/* ===== BATTLE ===== */
+#battle-screen{position:relative;}
+@keyframes vomitDrop{0%{opacity:0;transform:translateY(-10px) scale(.5);}40%{opacity:1;transform:translateY(12px) scale(1.2);}100%{opacity:0;transform:translateY(52px) scale(.7);}}
+@keyframes greenFlash{0%{opacity:1;}100%{opacity:0;}}
+@keyframes meowPop{0%{opacity:0;transform:translateY(0) scale(.6);}30%{opacity:1;transform:translateY(-12px) scale(1.2);}80%{opacity:1;transform:translateY(-28px) scale(1);}100%{opacity:0;transform:translateY(-42px) scale(.8);}}
+@keyframes screenShake{0%,100%{transform:translate(0,0);}10%{transform:translate(-6px,-4px);}20%{transform:translate(6px,4px);}30%{transform:translate(-5px,3px);}40%{transform:translate(5px,-3px);}50%{transform:translate(-4px,2px);}60%{transform:translate(4px,-2px);}70%{transform:translate(-3px,1px);}80%{transform:translate(3px,-1px);}90%{transform:translate(-1px,1px);}}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
+@keyframes impactRing{0%{opacity:.9;transform:translate(-50%,-50%) scale(0);}60%{opacity:.5;}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+@keyframes slashSwipe{0%{opacity:0;transform:rotate(var(--sr)) scaleX(0);transform-origin:left center;}30%{opacity:1;}60%{opacity:.7;transform:rotate(var(--sr)) scaleX(1);transform-origin:left center;}100%{opacity:0;transform:rotate(var(--sr)) scaleX(1.1);transform-origin:left center;}}
+@keyframes hitFlash{0%{opacity:.85;}100%{opacity:0;}}
+@keyframes critBoom{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-10deg);}25%{opacity:1;transform:translate(-50%,-50%) scale(1.3) rotate(5deg);}60%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-3deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1) rotate(0deg);}}
+@keyframes speedLinesAnim{0%{opacity:0;transform:scale(.3);}25%{opacity:1;}70%{opacity:.7;}100%{opacity:0;transform:scale(1.4);}}
+@keyframes kanjiPop{0%{opacity:0;transform:translate(-50%,-50%) scale(3) rotate(-12deg);}18%{opacity:1;transform:translate(-50%,-50%) scale(.95) rotate(4deg);}55%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(-1deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1);}}
+@keyframes whiteFlash{0%{opacity:1;}100%{opacity:0;}}
+@keyframes battleAuraPulse{0%,100%{opacity:.08;}50%{opacity:.22;}}
+@keyframes hikkakiPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-15deg);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.35) rotate(8deg);}55%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg);}80%{opacity:.8;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05) rotate(0deg);}}
+@keyframes inemuriFloat{0%{opacity:0;transform:translate(-50%,-50%) scale(0.3) translateY(40px);}25%{opacity:1;transform:translate(-50%,-50%) scale(1.05) translateY(-8px);}70%{opacity:1;transform:translate(-50%,-50%) scale(1) translateY(4px);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.95) translateY(-10px);}}
+@keyframes enemyEntrance{0%{opacity:0;transform:translateX(60px) scale(1.4);}60%{transform:translateX(-5px) scale(.97);}100%{opacity:1;transform:translateX(0) scale(1);}}
+.impact-kanji{position:absolute;z-index:175;pointer-events:none;font-weight:900;letter-spacing:-1px;animation:kanjiPop .8s cubic-bezier(.22,.61,.36,1) forwards;}
+.battle-aura{position:absolute;inset:0;pointer-events:none;z-index:0;animation:battleAuraPulse 2s ease-in-out infinite;}
+.stage-banner{background:linear-gradient(90deg,rgba(0,0,0,.85),rgba(20,10,40,.9),rgba(0,0,0,.85));color:var(--gold);text-align:center;padding:6px;font-size:11px;font-weight:700;letter-spacing:3px;flex-shrink:0;border-bottom:1px solid rgba(255,215,0,.3);text-shadow:0 0 10px rgba(255,215,0,.6);}
+.battle-field{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:7px 12px;position:relative;overflow:hidden;}
+/* Enemy */
+.enemy-section{display:flex;align-items:flex-start;gap:10px;}
+.enemy-sprite{font-size:72px;line-height:1;animation:enemyBob 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,100,50,.3)) drop-shadow(3px 6px 8px rgba(0,0,0,.5));}
+.enemy-sprite.entrance{animation:enemyEntrance .5s ease-out forwards;}
+.enemy-sprite.hurt{animation:hurtShake .45s ease;filter:brightness(3) drop-shadow(0 0 18px #f44) saturate(2);}
+@keyframes enemyBob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-8px) rotate(1deg);}}
+@keyframes hurtShake{0%{transform:translateX(0);}15%{transform:translateX(-18px) rotate(-8deg) scale(1.05);}35%{transform:translateX(14px) rotate(6deg);}55%{transform:translateX(-10px) rotate(-4deg);}75%{transform:translateX(6px) rotate(2deg);}100%{transform:translateX(0);}}
+.enemy-info{flex:1;min-width:0;}
+.enemy-name{font-size:14px;font-weight:900;color:#0a0a1e;text-shadow:1px 1px 0 white;}
+.enemy-tagline{font-size:9px;color:#333;margin-bottom:4px;line-height:1.3;}
+.hp-bar-wrap{background:rgba(0,0,0,.22);border-radius:10px;height:13px;overflow:hidden;border:2px solid rgba(0,0,0,.2);}
+.hp-bar{height:100%;border-radius:8px;transition:width .5s;position:relative;overflow:hidden;}
+.hp-bar::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:3px;background:rgba(255,255,255,.4);border-radius:2px;}
+.hp-bar.e-hp{background:linear-gradient(90deg,#c62828,#ef5350);}
+.hp-bar.p-hp{background:linear-gradient(90deg,#2e7d32,#66bb6a);}
+.hp-bar.p-hp.low{background:linear-gradient(90deg,#e65100,#ffa726);}
+.hp-bar.p-hp.crit{background:linear-gradient(90deg,#b71c1c,#ef5350);}
+.hp-text{font-size:9px;font-weight:700;color:white;text-shadow:1px 1px 0 rgba(0,0,0,.6);margin-top:1px;}
+/* Party row */
+.party-row{display:flex;gap:8px;justify-content:center;align-items:flex-end;padding:2px 0;}
+.party-slot{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.party-label{font-size:9px;font-weight:700;color:white;text-shadow:1px 1px 0 rgba(0,0,0,.7);background:rgba(0,0,0,.4);padding:1px 5px;border-radius:6px;}
+.cat-fighter{animation:hakuBob 1.8s ease-in-out infinite;filter:drop-shadow(2px 4px 8px rgba(0,0,0,.5));cursor:default;user-select:none;}
+@keyframes hakuBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-9px) rotate(2deg);}}
+.cat-fighter.attack{animation:catAttack .55s cubic-bezier(.22,.61,.36,1) forwards;}
+@keyframes catAttack{0%{transform:translateX(0) scale(1);}10%{transform:translateX(-14px) scale(.8);filter:blur(1px);}35%{transform:translateX(95px) scale(1.5);filter:blur(0);}52%{transform:translateX(75px) scale(1.15);}100%{transform:translateX(0) scale(1);}}
+.cat-fighter.inactive{opacity:.3;animation:none;filter:grayscale(.8);}
+/* Battle log */
+.battle-log{background:linear-gradient(135deg,rgba(0,0,0,.82),rgba(10,5,20,.88));border-radius:10px;padding:8px 14px;min-height:46px;display:flex;align-items:center;border:1px solid rgba(255,215,0,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 12px rgba(0,0,0,.4);}
+.battle-log p{color:#f0e8ff;font-size:12px;font-weight:700;line-height:1.6;text-shadow:0 1px 4px rgba(0,0,0,.8);}
+/* Player HP */
+.player-section{padding-bottom:2px;}
+.party-hp-row{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap;}
+.party-hp-card{background:rgba(0,0,0,.4);border-radius:8px;padding:4px 8px;flex:1;min-width:100px;border:1px solid rgba(255,255,255,.1);}
+.party-hp-name{font-size:9px;font-weight:900;color:var(--gold);margin-bottom:2px;}
+/* Mana */
+.mana-row{display:flex;gap:3px;margin-bottom:4px;align-items:center;}
+.mana-gem{width:15px;height:15px;border-radius:50%;border:2px solid rgba(0,0,0,.2);transition:all .3s;}
+.mana-gem.full{background:radial-gradient(circle at 35% 35%,#64b5f6,#1565c0);box-shadow:0 0 5px #64b5f6;}
+.mana-gem.empty{background:#555;}
+.cards-label{font-size:10px;font-weight:700;color:white;text-shadow:1px 1px 0 rgba(0,0,0,.7);margin-bottom:3px;}
+.cards-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.cards-row::-webkit-scrollbar{display:none;}
+
+/* ===== CARD RICH DESIGN ===== */
+.card{flex:0 0 auto;width:84px;background:linear-gradient(160deg,#f4f4ff 0%,#e4e4f4 55%,#d0d0e8 100%);border-radius:12px;padding:7px 5px 6px;text-align:center;cursor:pointer;border:3px solid #888;box-shadow:0 5px 0 rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.18);transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s ease,border-color .18s ease;user-select:none;position:relative;overflow:hidden;}
+
+/* 光沢オーバーレイ */
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:48%;background:linear-gradient(180deg,rgba(255,255,255,.6) 0%,rgba(255,255,255,.05) 100%);border-radius:10px 10px 50% 50%;pointer-events:none;z-index:2;}
+
+/* タイプ別カラーバー（上部） */
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;border-radius:10px 10px 0 0;z-index:3;}
+.card.atk::before{background:linear-gradient(90deg,#c62828,#ff5252);}
+.card.skl::before{background:linear-gradient(90deg,#6a1fa2,#ab47bc);}
+.card.heal::before{background:linear-gradient(90deg,#1b5e20,#43a047);}
+.card.spc::before{background:linear-gradient(90deg,#bf360c,#ff7043);}
+
+/* レアリティ枠色 */
+.card.normal{border-color:#888;}
+.card.rare{border-color:#1e90ff;box-shadow:0 5px 0 rgba(0,40,140,.35),0 0 12px rgba(30,144,255,.35);background:linear-gradient(160deg,#f0f4ff 0%,#dce8ff 55%,#c0d0ff 100%);}
+.card.sr{border-color:#FFD700;box-shadow:0 5px 0 rgba(100,60,0,.4),0 0 16px rgba(255,215,0,.55);background:linear-gradient(160deg,#fffce0 0%,#fff4a0 55%,#ffe060 100%);}
+
+/* ホバー：浮き上がりアニメ */
+.card:not(.dis):hover{transform:translateY(-7px) scale(1.07);box-shadow:0 12px 0 rgba(0,0,0,.22),0 4px 20px rgba(0,0,0,.28);z-index:10;}
+.card.rare:not(.dis):hover{box-shadow:0 12px 0 rgba(0,40,140,.3),0 4px 20px rgba(30,144,255,.45);}
+.card.sr:not(.dis):hover{box-shadow:0 12px 0 rgba(100,60,0,.3),0 4px 24px rgba(255,215,0,.7);}
+
+/* 選択中ハイライト */
+.card.selected{transform:translateY(-9px) scale(1.1);border-color:#FFD700 !important;animation:cardPulseGlow .55s ease-in-out infinite alternate;}
+@keyframes cardPulseGlow{from{box-shadow:0 14px 0 rgba(0,0,0,.18),0 0 18px rgba(255,220,50,.65);}to{box-shadow:0 14px 0 rgba(0,0,0,.18),0 0 32px rgba(255,220,50,1);}}
+
+/* クリック押し込み */
+.card:active:not(.dis){transform:translateY(2px) scale(.97);box-shadow:0 2px 0 rgba(0,0,0,.2);}
+.card.dis{opacity:.38;cursor:not-allowed;}
+
+/* コストバッジ */
+.card-cost{font-size:10px;font-weight:900;position:absolute;top:5px;right:5px;background:radial-gradient(circle at 35% 35%,#64b5f6,#1565c0);color:white;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);z-index:4;}
+
+/* アイコン・テキスト */
+.card-icon{font-size:24px;line-height:1;margin-top:3px;position:relative;z-index:1;}
+.card-name{font-size:10px;font-weight:900;color:#1a1a2e;margin-top:3px;line-height:1.2;position:relative;z-index:1;}
+.card-desc{font-size:8px;color:#444;margin-top:2px;line-height:1.3;position:relative;z-index:1;}
+/* Who attacks indicator */
+.atk-indicator{font-size:10px;font-weight:900;color:var(--gold);margin-bottom:2px;text-shadow:1px 1px 0 rgba(0,0,0,.6);}
+.btn-endturn{margin-top:4px;padding:8px;width:100%;font-size:13px;font-weight:900;font-family:'Zen Maru Gothic',sans-serif;background:linear-gradient(135deg,#37474f,#1c313a);color:white;border:none;border-radius:9px;cursor:pointer;box-shadow:0 4px 0 #0d1f26;transition:all .1s;}
+.btn-endturn:active{transform:translateY(3px);box-shadow:0 1px 0 #0d1f26;}
+.btn-endturn:disabled{opacity:.38;cursor:not-allowed;}
+/* Damage numbers */
+.dmg-num{position:absolute;font-size:28px;font-weight:900;pointer-events:none;animation:floatUpImpact 1.1s cubic-bezier(.22,.61,.36,1) forwards;z-index:100;}
+.dmg-num.dmg{color:#ff1744;text-shadow:0 0 8px rgba(255,23,68,.8),2px 2px 0 #7f0000;}
+.dmg-num.dmg.crit{font-size:38px;color:#ff6d00;text-shadow:0 0 14px rgba(255,109,0,1),2px 2px 0 #7f3000;}
+.dmg-num.heal{color:#69f0ae;text-shadow:0 0 8px rgba(105,240,174,.8),2px 2px 0 #1b5e20;}
+.dmg-num.miss{color:white;font-size:18px;text-shadow:1px 1px 0 rgba(0,0,0,.6);}
+@keyframes floatUpImpact{0%{opacity:0;transform:translateY(8px) scale(2);}15%{opacity:1;transform:translateY(0) scale(1);}70%{opacity:1;transform:translateY(-40px) scale(1);}100%{opacity:0;transform:translateY(-70px) scale(.8);}}
+/* Meow bubble */
+.meow-bubble{position:absolute;font-size:16px;font-weight:900;color:white;background:rgba(0,0,0,.7);border:2px solid var(--gold);border-radius:12px;padding:3px 8px;pointer-events:none;z-index:120;white-space:nowrap;animation:meowPop 1.2s ease forwards;}
+.turn-flash{position:absolute;top:42%;left:0;right:0;text-align:center;z-index:200;pointer-events:none;animation:turnBannerSlide 1.3s cubic-bezier(.22,.61,.36,1) forwards;white-space:nowrap;overflow:hidden;}
+.turn-flash-inner{display:inline-block;background:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.92) 15%,rgba(10,5,30,.95) 50%,rgba(0,0,0,.92) 85%,transparent 100%);color:var(--gold);font-size:22px;font-weight:900;padding:12px 60px;letter-spacing:4px;text-shadow:0 0 20px rgba(255,215,0,.9),0 0 40px rgba(255,215,0,.4),2px 2px 0 rgba(0,0,0,.8);border-top:2px solid rgba(255,215,0,.5);border-bottom:2px solid rgba(255,215,0,.5);width:100%;box-sizing:border-box;}
+@keyframes turnBannerSlide{0%{opacity:0;transform:translateX(-100%) skewX(-8deg);}18%{opacity:1;transform:translateX(0) skewX(-8deg);}70%{opacity:1;transform:translateX(0) skewX(-8deg);}100%{opacity:0;transform:translateX(100%) skewX(-8deg);}}
+
+/* ===== RESULT ===== */
+#result-screen{align-items:center;justify-content:center;gap:14px;}
+#result-screen.win{background:linear-gradient(160deg,#0a1a0a,#1a3a1a,#0a2a0a);}
+#result-screen.lose{background:linear-gradient(160deg,#1a0a0a,#3a1a1a,#2a0a0a);}
+.result-cats{display:flex;gap:10px;justify-content:center;}
+.result-title{font-size:36px;font-weight:900;text-shadow:3px 3px 0 rgba(0,0,0,.3);}
+.result-title.win{color:var(--gold);}.result-title.lose{color:#ff5252;}
+.result-msg{font-size:12px;color:#ddd;text-align:center;padding:0 22px;line-height:1.6;}
+.result-reward{background:rgba(255,215,0,.14);border:2px solid var(--gold);border-radius:11px;padding:8px 20px;color:var(--gold);font-weight:700;font-size:13px;}
+.btn-next{padding:12px 32px;font-size:17px;font-weight:900;font-family:'Zen Maru Gothic',sans-serif;background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;border:none;border-radius:50px;cursor:pointer;box-shadow:0 5px 0 #0a2e0a;transition:all .1s;}
+.btn-next:active{transform:translateY(3px);box-shadow:0 2px 0 #0a2e0a;}
+
+/* ===== ENDING ===== */
+#ending-screen{background:linear-gradient(160deg,#0a0a2a,#1a1060,#0a1a08);align-items:center;justify-content:center;gap:12px;padding:30px 20px;}
+.ending-title{font-size:28px;font-weight:900;color:var(--gold);text-align:center;text-shadow:0 0 20px rgba(255,215,0,.6);line-height:1.3;}
+.ending-cats{display:flex;gap:10px;justify-content:center;animation:heroFloat 4s ease-in-out infinite;}
+.ending-text{font-size:12px;color:#ddd;text-align:center;line-height:1.8;padding:0 16px;}
+.ending-matabi{font-size:60px;animation:matabi 2s ease-in-out infinite;}
+@keyframes matabi{0%,100%{transform:rotate(-10deg) scale(1);}50%{transform:rotate(10deg) scale(1.2);}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===== TITLE ===== -->
+<div id="title-screen" class="screen active">
+  <div class="title-logo">
+    <div class="sub1">✦ CAT ADVENTURE RPG ✦</div>
+    <h1>ハクの大冒険 ver1.1</h1>
+    <div class="sub2">〜 黄金のまたたびを求めて 〜</div>
+  </div>
+  <div class="title-bottom">
+    <div class="title-tagline">
+      サバトラ猫ハクが仲間とともに<br>
+      伝説の黄金のまたたびを追う！<br>
+      昆虫たちを倒して旅を続けろ！
+    </div>
+    <button class="btn-start" onclick="startStory()">▶ はじめる</button>
+    <button onclick="debugLastBattle()" style="margin-top:8px;padding:8px 20px;font-size:13px;background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:20px;cursor:pointer;z-index:1;position:relative;">🛠 最終バトルテスト</button>
+  </div>
+  <button class="bgm-btn" id="bgm-btn-t" onclick="toggleBGM()">🔇</button>
+</div>
+
+<!-- ===== STORY ===== -->
+<div id="story-screen" class="screen">
+  <div class="story-box" onclick="advanceStory()">
+    <div class="story-bg" id="story-bg"></div>
+    <div class="story-content">
+      <div class="story-scene" id="story-scene">🌿</div>
+      <div class="story-cats-row" id="story-cats-row"></div>
+      <div class="story-window">
+        <div class="story-progress" id="story-progress"></div>
+        <div class="story-speaker" id="story-speaker"></div>
+        <div class="story-text" id="story-text"></div>
+        <span class="story-next">▼ タップして続ける</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BATTLE ===== -->
+<div id="battle-screen" class="screen">
+  <div class="stage-banner" id="stage-banner">⚔️ バトル</div>
+  <div class="battle-field">
+    <div class="enemy-section">
+      <div><div class="enemy-sprite" id="enemy-sprite">👹</div></div>
+      <div class="enemy-info">
+        <div class="enemy-name" id="enemy-name">鬼</div>
+        <div class="enemy-tagline" id="enemy-tagline">「うぬ！」</div>
+        <div class="hp-bar-wrap"><div class="hp-bar e-hp" id="enemy-hp-bar" style="width:100%"></div></div>
+        <div class="hp-text" id="enemy-hp-text">HP 40/40</div>
+      </div>
+    </div>
+    <div class="party-row" id="party-row"></div>
+    <div class="battle-log"><p id="battle-log-text">バトル開始！</p></div>
+    <div class="player-section">
+      <div class="party-hp-row" id="party-hp-row"></div>
+      <div class="atk-indicator" id="atk-indicator">🐱 ハクのターン</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <div class="cards-label">💎 マナ:</div>
+        <div class="mana-row" id="mana-row"></div>
+      </div>
+      <div class="cards-label">🃏 てふだ（攻撃するキャラ：<span id="attacker-name">ハク</span>）</div>
+      <div class="cards-row" id="cards-row"></div>
+      <button class="btn-endturn" id="btn-endturn" onclick="endTurn()">⏭️ ターン終了</button>
+    </div>
+  </div>
+  <button class="bgm-btn" id="bgm-btn-b" onclick="toggleBGM()" style="bottom:6px;right:6px;">🔇</button>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div id="result-screen" class="screen">
+  <div class="result-cats" id="result-cats"></div>
+  <div class="result-title" id="result-title">しょうり！</div>
+  <div class="result-msg" id="result-msg"></div>
+  <div class="result-reward" id="result-reward" style="display:none"></div>
+  <button class="btn-next" id="btn-next" onclick="afterBattle()">つぎへ ▶</button>
+</div>
+
+<!-- ===== ENDING ===== -->
+<div id="ending-screen" class="screen">
+  <div class="ending-matabi">🌿</div>
+  <div class="ending-title">黄金のまたたびを<br>手に入れた！</div>
+  <div class="ending-cats" id="ending-cats"></div>
+  <div class="ending-text" id="ending-text"></div>
+  <button class="btn-next" onclick="backToTitle()" style="margin-top:8px;">🔄 もう一度遊ぶ</button>
+</div>
+
+</div><!-- #app -->
+
+<script>
+'use strict';
+// ============================================================
+//  SVG 猫生成
+// ============================================================
+// type: 'sabatora'=サバトラ(ハク), 'kijitora'=キジトラ(セン), 'hachiware'=ハチワレ(キヌ)
+function makeCat(size, expr, type){
+  type=type||'sabatora';
+  if(type==='sabatora'){
+    let filter='';
+    if(expr==='hurt') filter='brightness(2) sepia(1) saturate(5) hue-rotate(-20deg)';
+    else if(expr==='happy') filter='brightness(1.2) saturate(1.3)';
+    else if(expr==='attack') filter='brightness(1.1) saturate(1.4) contrast(1.1)';
+    return `<img src="haku.jpg" width="${size}" height="${size}" style="object-fit:cover;border-radius:50%;filter:${filter};display:block;" />`;
+  }
+  if(type==='kijitora'){
+    let filter='';
+    if(expr==='hurt') filter='brightness(2) sepia(1) saturate(5) hue-rotate(-20deg)';
+    else if(expr==='happy') filter='brightness(1.2) saturate(1.3)';
+    return `<img src="sen.png" width="${size}" height="${size}" style="object-fit:cover;border-radius:50%;filter:${filter};display:block;" />`;
+  }
+  // カラーパレット
+  const C={
+    sabatora:{base:'#b8b8a0',stripe:'#5a5a48',white:'#f0f0e8',nose:'#e8a0a0',eye:'#7dc87d'},
+    kijitora: {base:'#c8a060',stripe:'#7a4820',white:'#f8f0e0',nose:'#e8b0a0',eye:'#d4a020'},
+    hachiware:{base:'#e8e8e8',stripe:'#333333',white:'#ffffff',nose:'#f0a0c0',eye:'#6ab0e8'},
+  }[type];
+
+  let eyeL,eyeR,mouth;
+  if(expr==='attack'){
+    eyeL=`<ellipse cx="48" cy="70" rx="9" ry="7" fill="${C.eye}"/>
+           <ellipse cx="48" cy="72" rx="4" ry="6" fill="#111"/>
+           <line x1="34" y1="62" x2="58" y2="65" stroke="${C.stripe}" stroke-width="3" stroke-linecap="round"/>`;
+    eyeR=`<ellipse cx="82" cy="70" rx="9" ry="7" fill="${C.eye}"/>
+           <ellipse cx="82" cy="72" rx="4" ry="6" fill="#111"/>
+           <line x1="72" y1="62" x2="96" y2="65" stroke="${C.stripe}" stroke-width="3" stroke-linecap="round"/>`;
+    mouth=`<path d="M58 88 Q65 82 72 88" stroke="#7a5a5a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  } else if(expr==='hurt'){
+    eyeL=`<path d="M38 67 Q48 75 57 67" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    eyeR=`<path d="M73 67 Q82 75 91 67" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    mouth=`<path d="M59 90 Q65 85 71 90" stroke="#7a5a5a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  } else if(expr==='happy'){
+    eyeL=`<path d="M38 70 Q48 61 57 70" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    eyeR=`<path d="M73 70 Q82 61 91 70" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    mouth=`<path d="M57 85 Q65 94 73 85" stroke="#7a5a5a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  } else {
+    eyeL=`<ellipse cx="48" cy="68" rx="9" ry="9" fill="${C.eye}"/>
+           <ellipse cx="48" cy="68" rx="4.5" ry="7" fill="#111"/>
+           <circle cx="50" cy="65" r="1.8" fill="white"/>`;
+    eyeR=`<ellipse cx="82" cy="68" rx="9" ry="9" fill="${C.eye}"/>
+           <ellipse cx="82" cy="68" rx="4.5" ry="7" fill="#111"/>
+           <circle cx="84" cy="65" r="1.8" fill="white"/>`;
+    mouth=`<path d="M65 83 Q58 91 53 88" stroke="#7a5a5a" stroke-width="2" fill="none" stroke-linecap="round"/>
+           <path d="M65 83 Q72 91 77 88" stroke="#7a5a5a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  }
+  // ハチワレの場合は額に黒パッチ
+  const patch = type==='hachiware'
+    ? `<ellipse cx="65" cy="44" rx="22" ry="18" fill="${C.stripe}" opacity=".85"/>`
+    : '';
+  // キジトラは茶系しま
+  const stripeOpacity = type==='kijitora' ? '0.7' : '0.55';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="22,40 9,9 41,31" fill="${C.base}"/>
+    <polygon points="22,40 13,14 36,31" fill="${C.nose}" opacity=".7"/>
+    <polygon points="108,40 121,9 89,31" fill="${C.base}"/>
+    <polygon points="108,40 117,14 94,31" fill="${C.nose}" opacity=".7"/>
+    <polygon points="20,37 12,17 30,29" fill="${C.stripe}" opacity="${stripeOpacity}"/>
+    <polygon points="110,37 118,17 100,29" fill="${C.stripe}" opacity="${stripeOpacity}"/>
+    <ellipse cx="65" cy="73" rx="48" ry="44" fill="${C.base}"/>
+    ${patch}
+    <ellipse cx="65" cy="89" rx="31" ry="25" fill="${C.white}"/>
+    <path d="M28 53 Q37 47 46 53" stroke="${C.stripe}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M23 64 Q33 57 43 64" stroke="${C.stripe}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M84 53 Q93 47 102 53" stroke="${C.stripe}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M87 64 Q97 57 107 64" stroke="${C.stripe}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M48 43 Q53 35 60 41 Q65 33 70 41 Q77 35 82 43" stroke="${C.stripe}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    ${eyeL}${eyeR}
+    <ellipse cx="65" cy="80" rx="5" ry="3.5" fill="${C.nose}"/>
+    ${mouth}
+    <line x1="62" y1="80" x2="26" y2="74" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+    <line x1="62" y1="81" x2="27" y2="81" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+    <line x1="62" y1="82" x2="29" y2="88" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+    <line x1="68" y1="80" x2="104" y2="74" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+    <line x1="68" y1="81" x2="103" y2="81" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+    <line x1="68" y1="82" x2="101" y2="88" stroke="#aaa" stroke-width="1.2" opacity=".8"/>
+  </svg>`;
+}
+
+// ============================================================
+//  BGM (MP3)
+// ============================================================
+let bgmAudio=null,bgmOn=false,currentBGMSrc='BGM/title.mp3';
+function initAC(){}
+function playBGM(src){
+  if(currentBGMSrc===src&&bgmAudio&&!bgmAudio.paused)return;
+  if(bgmAudio){bgmAudio.pause();bgmAudio.currentTime=0;}
+  currentBGMSrc=src;
+  const encodedSrc=src.split('/').map((p,i)=>i===0?p:encodeURIComponent(p)).join('/');
+  bgmAudio=new Audio(encodedSrc);
+  bgmAudio.loop=true;
+  bgmAudio.volume=0.5;
+  bgmAudio.onerror=()=>console.error('BGM読み込み失敗:',src);
+  bgmAudio.play().then(()=>{bgmOn=true;updBGMBtn('🔊');}).catch(e=>console.error('BGM再生失敗:',e));
+}
+function startBGM(){playBGM('BGM/sentou.mp3');}
+function startTitleBGM(){playBGM('BGM/title.mp3');}
+function startIdouBGM(){playBGM('BGM/idou.mp3');}
+function stopBGM(){
+  if(bgmAudio){bgmAudio.pause();bgmAudio.currentTime=0;}
+  bgmOn=false;currentBGMSrc='BGM/title.mp3';updBGMBtn('🔇');
+}
+function toggleBGM(){bgmOn?stopBGM():playBGM(currentBGMSrc||'BGM/title.mp3');}
+function updBGMBtn(ic){['bgm-btn-t','bgm-btn-b'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=ic;});}
+function tone(f,s,d,v,tp){
+  if(!AC||!f)return null;
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(AC.destination);
+  o.type=tp;o.frequency.value=f;
+  g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(v,s+.01);
+  g.gain.linearRampToValueAtTime(v*.6,s+d*.65);g.gain.linearRampToValueAtTime(0,s+d);
+  o.start(s);o.stop(s+d+.05);return o;
+}
+
+const N={C4:261.6,D4:293.7,E4:329.6,F4:349.2,G4:392,A4:440,B4:493.9,C5:523.3,D5:587.3,E5:659.3,F5:698.5,G5:784,A5:880};
+
+// 効果音
+let AC=null;
+function sfx(type){
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
+  if(!AC)return;const t=AC.currentTime;
+  if(type==='meow'){
+    // にゃ〜っ！鳴き声：サイン波で上昇するにゃーん
+    tone(600,t,.04,.5,'sine');tone(800,t+.04,.06,.4,'sine');
+    tone(1000,t+.10,.08,.35,'sine');tone(700,t+.18,.12,.25,'sine');
+  } else if(type==='meow2'){
+    // 甲高いにゃっ
+    tone(900,t,.03,.5,'sine');tone(1200,t+.03,.05,.4,'sine');tone(800,t+.08,.1,.3,'sine');
+  } else if(type==='meow3'){
+    // 低いうなり
+    tone(300,t,.05,.5,'sawtooth');tone(250,t+.06,.08,.4,'sawtooth');tone(200,t+.14,.1,.35,'sawtooth');
+  } else if(type==='attack'){
+    tone(N.A5,t,.06,.3,'square');tone(N.E5,t+.07,.08,.25,'square');tone(N.C5,t+.16,.10,.2,'sawtooth');
+  } else if(type==='hurt'){
+    tone(160,t,.05,.3,'sawtooth');tone(110,t+.06,.09,.26,'sawtooth');
+  } else if(type==='heal'){
+    tone(N.C5,t,.08,.18,'sine');tone(N.E5,t+.09,.08,.18,'sine');tone(N.G5,t+.18,.12,.18,'sine');
+  } else if(type==='vomit'){
+    tone(180,t,.05,.35,'sawtooth');tone(120,t+.06,.09,.4,'sawtooth');tone(90,t+.15,.1,.35,'sawtooth');tone(60,t+.25,.15,.28,'sawtooth');
+  } else if(type==='win'){
+    [[N.C5,0],[N.E5,.1],[N.G5,.2],[N.C5,.3],[N.G5,.4],[N.C5,.56]].forEach(([f,s])=>tone(f,t+s,.17,.3,'square'));
+  } else if(type==='lose'){
+    tone(N.G4,t,.2,.3,'sawtooth');tone(N.E4,t+.22,.2,.3,'sawtooth');tone(N.C4,t+.44,.3,.3,'sawtooth');
+  } else if(type==='card'){
+    tone(N.G5,t,.04,.14,'square');tone(N.C5,t+.05,.06,.1,'square');
+  } else if(type==='story'){
+    tone(N.C5,t,.06,.2,'sine');tone(N.G5,t+.07,.08,.18,'sine');
+  } else if(type==='join'){
+    tone(N.C5,t,.08,.25,'sine');tone(N.E5,t+.09,.08,.25,'sine');tone(N.G5,t+.18,.08,.25,'sine');tone(N.C5,t+.27,.18,.35,'sine');
+  }
+}
+
+// 鳴き声テキストマップ
+const MEOW_TEXTS={
+  haku: ["にゃ〜っ！","にゃーっ！","みゃ！","ぐるるにゃ！"],
+  sen:  ["みゃあ！","にゃお！","きゅーん！","なぁ！"],
+  kinu: ["ふにゃ！","にゃっ♪","みゃ〜ん！","うにゃ！"],
+};
+
+// ============================================================
+//  STORY DATA
+// ============================================================
+// scene: {bg,cats,speaker,text,sfx?,join?,battleAfter?,joinParty?}
+// ★ storyAfter index map: STAGE0→11, STAGE1→21, STAGE2→31, STAGE3→-1
+const STORY_SCENES = [
+
+  // ===== プロローグ (index 0〜9) =====
+  {bg:"linear-gradient(180deg,#1a1a3a,#2a2a5a,#0a1a08)",cats:['haku'],scene:"🌙🌿",
+   speaker:"ナレーション",
+   text:"むかしむかし、猫たちの里に「黄金のまたたび」という伝説があった。\nそれを手に入れた者は、永遠に幸せに暮らせるという…"},
+  {bg:"linear-gradient(180deg,#1a1a3a,#2a2a5a,#0a1a08)",cats:['haku'],scene:"🏠🌿",
+   speaker:"ナレーション",
+   text:"サバトラ猫のハクは、縁側でこの伝説を聞いてから、ずっとそれを夢見ていた。"},
+  {bg:"linear-gradient(180deg,#1a1a3a,#2a2a5a,#0a1a08)",cats:['haku'],scene:"😴💤",
+   speaker:"隣のおじいさん猫（しろくろ）",
+   text:"「ハクよ、またその話か。おまえ昨日も夢でまたたびって叫んでたぞ。\n里中に聞こえとったわい」"},
+  {bg:"linear-gradient(180deg,#1a1a3a,#2a2a5a,#0a1a08)",cats:['haku'],scene:"😳💦",
+   speaker:"ハク",
+   text:"「し、知らないにゃ！！ぼくは…ぼくは絶対に見つけてやる！！\nに、にゃ〜っ！（恥ずかしい）」",
+   sfx:"meow"},
+  {bg:"linear-gradient(180deg,#1a1a2e,#2a2a4e,#0a0a1a)",cats:['haku'],scene:"🎒📦",
+   speaker:"ナレーション",
+   text:"翌朝、ハクは旅の準備を始めた。しかし荷物が多すぎて、縁側から一歩も動けなかった。"},
+  {bg:"linear-gradient(180deg,#1a1a2e,#2a2a4e,#0a0a1a)",cats:['haku'],scene:"🤔💭",
+   speaker:"ハク",
+   text:"「まぐろの缶詰×12、毛玉ボール×8、毛布3枚、爪とぎ…うん、必需品だにゃ」"},
+  {bg:"linear-gradient(180deg,#1a1a2e,#2a2a4e,#0a0a1a)",cats:['haku'],scene:"🏠😑",
+   speaker:"隣のおじいさん猫（しろくろ）",
+   text:"「…おまえ冒険行くんちゃうんか。なんでそんなデカい荷物を…」"},
+  {bg:"linear-gradient(180deg,#2a1a1a,#4a2a1a,#1a1008)",cats:['haku'],scene:"😤🎒",
+   speaker:"ハク",
+   text:"「うるさいにゃ！勇者とはいつでも備えるものなのだ！！\n（缶詰だけ持って出発した）」",
+   sfx:"meow"},
+  {bg:"linear-gradient(180deg,#1a1a2e,#2a2a4e,#0a0a1a)",cats:['haku'],scene:"🌄🗺️",
+   speaker:"ナレーション",
+   text:"こうしてハクの大冒険が幕を開けた。里の門を出てすぐ、ハクは盛大に石につまずいた。"},
+  {bg:"linear-gradient(180deg,#1a1a2e,#2a2a4e,#0a0a1a)",cats:['haku'],scene:"😵🌄",
+   speaker:"ハク",
+   text:"「いた！！…み、見てたやつはいないよな…！　に、にゃ！（誰も見てないふり）」"},
+
+  // ===== ステージ1前 (index 10〜15) =====
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"🌳🍃",
+   speaker:"ナレーション",
+   text:"里の入口の森。道標もなく、ハクはいきなり迷いかけた。"},
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"🐛😐",
+   speaker:"道端のイモムシ",
+   text:"「猫が一匹、こんな森に何しに来たんだ？　引き返すなら今のうちだぞ」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"😤🌳",
+   speaker:"ハク",
+   text:"「黄金のまたたびを探してるんだ！教えてくれるなら優しくしてあげるにゃ！」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"🕷️😤",
+   speaker:"里の入口の巨大クモ",
+   text:"「クモクモ！うるせえ！黄金のまたたびに近づく生き物はみんな俺が食ってやる！！\n…あ、でも猫ってあんまり食べたくないんだよなぁ。毛が喉につかえる」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"😑🕷️",
+   speaker:"ハク",
+   text:"「じゃあ最初から出てくるな！！　にゃーっ！！」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#b0e0e6,#228b22)",cats:['haku'],scene:"😾💥",
+   speaker:"ハク",
+   text:"「ぼくの道をふさぐな！やるならやってやるにゃ！！」",
+   sfx:"meow", battleAfter:0}, // → STAGE 0
+
+  // ===== ステージ1後 / セン加入 (index 16〜21) =====
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku'],scene:"🎉💥",
+   speaker:"ナレーション",
+   text:"クモは大ダメージを受け、蜘蛛の子を散らすように逃げ出した！"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku'],scene:"🕷️😭",
+   speaker:"巨大クモ（逃げながら）",
+   text:"「くぅ〜〜！ま、まさか猫一匹にここまでやられるとは…！\n昆虫ギルドには内緒にしてくれ〜〜！！」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku'],scene:"😎🌿",
+   speaker:"ハク",
+   text:"「へん！弱いくせに偉そうなやつだったにゃ。さあ先に進むぞ！」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku','sen'],scene:"💨🐱",
+   speaker:"セン",
+   text:"「ちょっと待って〜！あたしも黄金のまたたびを探してるんだ！\n一緒に行かせてにゃ！」",
+   sfx:"story"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku','sen'],scene:"🤔💛",
+   speaker:"ハク",
+   text:"「きみは…？」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku','sen'],scene:"😄💛",
+   speaker:"セン",
+   text:"「あたしはセン！キジトラの…（ドヤ顔で登場しようとして草に引っかかり転ぶ）\nふにゃあっ！！」",
+   sfx:"meow2"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku','sen'],scene:"😅💛",
+   speaker:"セン",
+   text:"「い、今のは演出だから！！　と、とにかく一緒に行こう！速いのはほんとだから！」"},
+  {bg:"linear-gradient(180deg,#87ceeb,#90ee90,#228b22)",cats:['haku','sen'],scene:"🤝😸",
+   speaker:"ハク",
+   text:"「…まあいいにゃ。2匹の方が心強いし。よろしくな、セン！」",
+   sfx:"join", joinParty:'sen'},
+
+  // ===== ステージ2前 (index 24〜29) =====
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"🌋🔥",
+   speaker:"ナレーション",
+   text:"炎の山道を進む2匹。すると突然センが立ち止まった。"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"🙈💦",
+   speaker:"セン",
+   text:"「ハク…あたし、実は方向音痴なんだけど…\n左と右どっちが山頂だっけ？ちょっとしか間違えてないと思うんだけど」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"😑🗺️",
+   speaker:"ハク",
+   text:"「ちょっとって…あっちは海だにゃ！！\n砂漠の方向に3時間歩いてたじゃないか！！」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"😅💦",
+   speaker:"セン",
+   text:"「あはは…暑かったのはそのせいかな〜。あたしの速さで取り返すから許して〜！」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"🪳🔥",
+   speaker:"炎の山の火のカブト",
+   text:"「カブカブ！この山を越えたいなら、まず俺を倒してみろ！\n…ところで猫ってなんで毛があんなに多いんだ？暑くないのか？」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"😤🪳",
+   speaker:"ハク",
+   text:"「関係ないことを聞くな！！\nセン、こいつは強そうだ。頼むにゃ！！」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ff6347,#8b4513)",cats:['haku','sen'],scene:"😼🔥",
+   speaker:"セン",
+   text:"「任せてにゃ！みゃあ！あたしが先に行く！！」",
+   sfx:"meow2", battleAfter:1}, // → STAGE 1
+
+  // ===== ステージ2後 / キヌ加入 (index 31〜38) =====
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen'],scene:"💪✨",
+   speaker:"ナレーション",
+   text:"火のカブトを完全撃破！カブトはもだえながら山の向こうへ消えた。"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen'],scene:"🪳😭",
+   speaker:"火のカブト（遠くから）",
+   text:"「ば、バカな…！猫2匹にやられるとは…！\n昆虫ギルドの月次会議に、どう報告すれば…！！うおおお〜〜〜〜！」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen'],scene:"🤭🔥",
+   speaker:"セン",
+   text:"「昆虫ってみんなギルド入ってるの？ちゃんと組織されてるのね…」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen'],scene:"😂🐱",
+   speaker:"ハク",
+   text:"「どうでもいいにゃ！さあ先へ行くぞ！」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen','kinu'],scene:"🌺💙",
+   speaker:"キヌ",
+   text:"「た、助けて〜〜！！昆虫に追いかけられてるの！ふにゃ！」",
+   sfx:"story"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen','kinu'],scene:"🤔💙",
+   speaker:"ハク",
+   text:"「…でも後ろに昆虫いないにゃ？」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen','kinu'],scene:"😶💙",
+   speaker:"キヌ",
+   text:"「あ！！　…逃げてたら逃げてたで習慣になっちゃったみたい。\nふにゃ〜（てへ）」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen','kinu'],scene:"😸😸😸",
+   speaker:"ハク・セン",
+   text:"「「 …こいつもか 」」"},
+  {bg:"linear-gradient(180deg,#ffa07a,#ffb86c,#8b6513)",cats:['haku','sen','kinu'],scene:"✨😺😺😺",
+   speaker:"ハク",
+   text:"「まあいい！3匹一緒なら無敵だにゃ！\n仲間になってくれキヌ！」",
+   sfx:"join", joinParty:'kinu'},
+
+  // ===== ステージ3前 (index 40〜46) =====
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"🌲🌲🌲",
+   speaker:"ナレーション",
+   text:"3匹は深い森の奥へ踏み込んだ。すると漂ってきた、あの幻の香り…"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"😵💫🌿",
+   speaker:"ハク",
+   text:"「こ、この香りは…まさか！！　にゃ〜〜〜（鼻ムズムズ）」",
+   sfx:"meow"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"💫😻💫",
+   speaker:"セン",
+   text:"「みゃ〜〜…あたし体がゆるゆるに…うにゃ…（その場でゴロゴロしだす）」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"😵‍💫🌸",
+   speaker:"キヌ",
+   text:"「ふにゃあ〜〜…まだまたたびじゃないのに、香りだけでこれは…\nまずい、戦えなくなる！！」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"😤🌲",
+   speaker:"ハク",
+   text:"「し、しっかりしろ3匹！！ここでへばってたら本物を手に入れられないにゃ！！」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"🦋💜",
+   speaker:"森の蝶（ドヤ顔）",
+   text:"「ピョンピョン！猫たちよ！その香りに惑わされたか？！\nここはわたしの縄張り！一歩でも踏み込んだら…えーと、なんかする！！」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"😑🦋",
+   speaker:"セン",
+   text:"「…『なんかする』って何。ちゃんと決めてから出てきなさい」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"😠🦋",
+   speaker:"森の蝶",
+   text:"「う、うるさい！とにかくかかってこい！ここでくたばれ！！」"},
+  {bg:"linear-gradient(180deg,#2d6b2d,#1a4a1a,#0a2a0a)",cats:['haku','sen','kinu'],scene:"🔥😾😾😾",
+   speaker:"キヌ",
+   text:"「うにゃ〜！！　スカしたこと言ってるから負けるんだよ！\n3匹でやっつけちゃえ！！」",
+   sfx:"meow3", battleAfter:2}, // → STAGE 2
+
+  // ===== ステージ4前（ラスボス）(index 49〜54) =====
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"⛩️✨",
+   speaker:"ナレーション",
+   text:"ついに…黄金のまたたびが祀られた神社へ辿り着いた！\n3匹は思わず立ち尽くした。"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"😭✨",
+   speaker:"ハク",
+   text:"「こ、ここが…！！　やっと来たにゃ……（目がウルウル）」",
+   sfx:"meow"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"📸😊",
+   speaker:"セン",
+   text:"「せっかくだから記念写真撮ろうよ！はい、みんな寄って〜！　…あれ、賽銭箱ってどこ？」"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"🤦💦",
+   speaker:"キヌ",
+   text:"「センが鳥居に頭ぶつけたあの音、里まで聞こえたと思う…\nふにゃ（遠い目）」"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"🐞👑",
+   speaker:"昆虫の大将（黄金のクワガタ）",
+   text:"「よくぞここまで来た、猫どもよ。\nだがこのまたたびは俺のもの……（咳払い）ゴホン……威厳があるだろ？練習してきたんだ」"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"😑👑",
+   speaker:"セン",
+   text:"「練習してきたって自分で言うな」"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"😤🐞",
+   speaker:"黄金のクワガタ",
+   text:"「う、うるさい！！とにかく俺を倒せるか！！\n倒したらまたたびをやる！！（勢いで言ってしまった）」"},
+  {bg:"linear-gradient(180deg,#1a0a3a,#3a0a6a,#0a0520)",cats:['haku','sen','kinu'],scene:"😾😾😾",
+   speaker:"ハク・セン・キヌ",
+   text:"「「「 それ絶対もらうにゃ！！！\nにゃ〜〜〜〜っ！！！ 」」」",
+   sfx:"meow", battleAfter:3}, // → STAGE 3
+];
+
+// ============================================================
+//  GAME DATA
+// ============================================================
+const CATS={
+  haku:{name:"ハク",  type:'sabatora',maxHp:30,hp:30,attack:8, defense:3},
+  sen: {name:"セン",  type:'kijitora', maxHp:26,hp:26,attack:10,defense:2},
+  kinu:{name:"キヌ",  type:'hachiware',maxHp:22,hp:22,attack:7, defense:2},
+};
+
+const STAGES=[
+  {name:"ステージ1：里の入口",
+   enemy:{name:"巨大クモ",tagline:"「クモクモ！猫めが！」",sprite:"🕷️",maxHp:35,attack:7,defense:1,bg:"linear-gradient(180deg,#87CEEB,#B0E0E6 38%,#90EE90 38%,#2d8b2d)"},
+   drops:"🗺️ 古い地図",winMsg:"巨大クモを倒した！「ぐぬぬ…覚えておれ！」",storyAfter:16},
+  {name:"ステージ2：炎の山道",
+   enemy:{name:"火のカブト",tagline:"「カブカブ！燃えろ！」",sprite:"🪳",maxHp:55,attack:10,defense:2,bg:"linear-gradient(180deg,#ffa07a,#ff6347 38%,#8b4513 38%,#5c3317)"},
+   drops:"🔥 炎の羽根",winMsg:"火のカブトを撃退！「ばバカな…猫ごときに…！」",storyAfter:31},
+  {name:"ステージ3：深い森",
+   enemy:{name:"森の蝶",tagline:"「ピョンピョン！負けんぞ！」",sprite:"🦋",maxHp:75,attack:12,defense:3,bg:"linear-gradient(180deg,#556b2f,#2d6b2d 38%,#1a3a1a 38%,#0a1a0a)"},
+   drops:"🌿 森の宝玉",winMsg:"森の蝶を打ち破った！「にゃんこ…強すぎる…」",storyAfter:49},
+  {name:"ステージ4：黄金の神社（最終決戦）",
+   enemy:{name:"黄金のクワガタ",tagline:"「クワクワ！黄金を守る！」",sprite:"🐞",maxHp:100,attack:15,defense:4,bg:"linear-gradient(180deg,#2d0a4e,#4a1580 38%,#1a0a2e 38%,#0d0520)"},
+   drops:"🌿 黄金のまたたび",winMsg:"黄金のクワガタを完全撃破！\n「まさか…伝説の猫たちか…」",storyAfter:-1}, // -1 = ending
+];
+
+const ALL_CARDS=[
+  {id:"scratch",  name:"ひっかき",    icon:"🐾", type:"atk",  cost:1, desc:"ひっかき攻撃",
+   who:"haku",  sfxType:"meow",  meow:"にゃーっ！",
+   effect:g=>dealDamage(g,g.activeParty[g.attackerIdx].attack,"player")},
+  {id:"pounce",   name:"とびかかり",  icon:"🦁", type:"atk",  cost:2, desc:"強ジャンプ攻撃",
+   who:"haku",  sfxType:"meow2", meow:"みゃ〜〜！",
+   effect:g=>dealDamage(g,g.activeParty[g.attackerIdx].attack+5,"player")},
+  {id:"fart",     name:"おなら攻撃",  icon:"💨", type:"atk",  cost:1, desc:"おならで攻撃！防御ダウン",
+   who:"haku",  sfxType:"meow",  meow:"ぷ〜っ！",
+   effect:g=>{dealDamage(g,g.activeParty[g.attackerIdx].attack+2,"player");g.enemy.defense=Math.max(0,g.enemy.defense-1);setLog("おなら攻撃！くさ〜い！防御ダウン！");}},
+  {id:"vomit",    name:"ゲロ吐き",    icon:"🤮", type:"spc",  cost:2, desc:"毒液！防御↓",
+   who:"haku",  sfxType:"vomit", meow:"うぷっ…にゃ！",
+   effect:g=>{dealDamage(g,g.activeParty[g.attackerIdx].attack+3,"player");g.enemy.defense=Math.max(0,g.enemy.defense-2);setLog(setLog_vomit(g));}},
+  {id:"superVomit",name:"超ゲロ砲",  icon:"💚", type:"spc",  cost:3, desc:"超大ダメ！防御激減",
+   who:"haku",  sfxType:"vomit", meow:"げぼぼぼにゃ〜！",
+   effect:g=>{dealDamage(g,g.activeParty[g.attackerIdx].attack+12,"player");g.enemy.defense=Math.max(0,g.enemy.defense-4);showVomitFx();setLog("超ゲロ砲炸裂！\n敵の防御が激減！くっさ〜！");}},
+  {id:"catlook",  name:"じーっとみる",icon:"👀", type:"skl",  cost:1, desc:"敵を1ターン麻痺",
+   who:"any",   sfxType:"meow2", meow:"…にゃ。",
+   effect:g=>{g.enemy.stunned=true;setLog(g.activeParty[g.attackerIdx].name+"はじーっと見つめた！\n敵がフリーズ！😳");}},
+  {id:"roll",     name:"ごろにゃん",  icon:"💤", type:"heal", cost:2, desc:"HP10回復",
+   who:"any",   sfxType:"heal",  meow:"ごろにゃ〜ん♪",
+   effect:g=>{sfx('heal');healCat(g,g.attackerIdx,10);}},
+  {id:"teamHeal", name:"みんなで癒し",icon:"✨", type:"heal", cost:3, desc:"全員HP7回復",
+   who:"any",   sfxType:"heal",  meow:"にゃ〜ん♪",
+   effect:g=>{sfx('heal');g.activeParty.forEach((_,i)=>healCat(g,i,7));setLog("みんなでごろにゃん！\n全員のHPが回復した！✨");}},
+  {id:"senSlash", name:"セン斬り",    icon:"⚡", type:"atk",  cost:2, desc:"セン専用！高速斬り",
+   who:"sen",   sfxType:"meow2", meow:"みゃお〜っ！",
+   effect:g=>dealDamage(g,g.activeParty[g.attackerIdx].attack+7,"player")},
+  {id:"kinuMagic",name:"キヌ魔法",    icon:"💫", type:"spc",  cost:3, desc:"キヌ専用！魔法攻撃",
+   who:"kinu",  sfxType:"meow3", meow:"ふにゃ〜〜！",
+   effect:g=>dealDamage(g,g.activeParty[g.attackerIdx].attack+9,"player")},
+  {id:"furball",  name:"けがたま爆弾",icon:"🌀", type:"spc",  cost:3, desc:"全力爆弾！",
+   who:"any",   sfxType:"meow",  meow:"にゃ〜〜〜っ！",
+   effect:g=>dealDamage(g,g.activeParty[g.attackerIdx].attack+8,"player")},
+];
+
+function setLog_vomit(g){return `${g.activeParty[g.attackerIdx].name}がゲロを吐いた！🤮\n${g.enemy.name}の防御ダウン！くさ〜い！`;}
+
+// ============================================================
+//  GAME STATE
+// ============================================================
+let gs={};
+let storyIdx=0;
+let party=[]; // joined party member keys
+
+function initParty(){
+  // Deep copy
+  party=['haku'];
+  const p={};
+  Object.keys(CATS).forEach(k=>{p[k]={...CATS[k]};});
+  return p;
+}
+
+let partyHP={}; // 体力を引き継ぐ
+
+function initBattle(stageIdx){
+  const stage=STAGES[stageIdx];
+  // active party = currently joined members (typeとkeyを必ず含める)
+  const activeCats=party.map(k=>({...partyHP[k],key:k,type:CATS[k].type,name:CATS[k].name}));
+  gs={
+    stageIdx,stage,
+    enemy:{...stage.enemy,hp:stage.enemy.maxHp,stunned:false,defense:stage.enemy.defense},
+    activeParty:activeCats,
+    attackerIdx:0,
+    mana:0,maxMana:3+Math.min(party.length-1,2), // 仲間が増えるとマナ上限+1
+    hand:[],playerTurn:true,busy:false,
+  };
+  drawHand();
+}
+
+function drawHand(){
+  // 現在のパーティに合わせてカードをフィルタ
+  const availCards=ALL_CARDS.filter(c=>{
+    if(c.who==='any') return true;
+    if(c.who==='haku') return true;
+    if(c.who==='sen')  return party.includes('sen');
+    if(c.who==='kinu') return party.includes('kinu');
+    return true;
+  });
+  gs.hand=[...availCards].sort(()=>Math.random()-.5).slice(0,4);
+  gs.mana=gs.maxMana;
+}
+
+// ============================================================
+//  SCREENS
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
+//  TITLE
+// ============================================================
+function startStory(){
+  playBGM('BGM/マサラタウンのテーマ.wav');
+  partyHP=initParty();
+  storyIdx=0;
+  showScreen('story-screen');
+  renderStory();
+}
+function debugLastBattle(){
+  partyHP=initParty();
+  party=['haku','sen','kinu'];
+  initBattle(3);
+  renderBattle();
+  showScreen('battle-screen');
+  playBGM('BGM/lastbattle.wav');
+}
+function backToTitle(){
+  showScreen('title-screen');
+  startTitleBGM();
+}
+
+// ============================================================
+//  STORY
+// ============================================================
+function renderStory(){
+  if(storyIdx<0||storyIdx>=STORY_SCENES.length){showEnding();return;}
+  const sc=STORY_SCENES[storyIdx];
+  if(!sc){showEnding();return;}
+  document.getElementById('story-bg').style.background=sc.bg||'#0a0a1e';
+  document.getElementById('story-scene').textContent=sc.scene||'🌿';
+  document.getElementById('story-speaker').textContent=sc.speaker||'';
+  document.getElementById('story-text').textContent=sc.text||'';
+  document.getElementById('story-progress').textContent=`${storyIdx+1}/${STORY_SCENES.length}`;
+  // 猫表示
+  const row=document.getElementById('story-cats-row');
+  row.innerHTML='';
+  const catsToShow=sc.cats||['haku'];
+  catsToShow.forEach(k=>{
+    if(!CATS[k])return;
+    const div=document.createElement('div');
+    div.innerHTML=makeCat(112,'normal',CATS[k].type);
+    row.appendChild(div);
+  });
+  // 仲間加入
+  if(sc.joinParty && !party.includes(sc.joinParty)){
+    party.push(sc.joinParty);
+    sfx('join');
+  }
+  if(sc.sfx) sfx(sc.sfx);
+  showScreen('story-screen');
+}
+
+function advanceStory(){
+  sfx('card');
+  if(storyIdx<0||storyIdx>=STORY_SCENES.length){showEnding();return;}
+  const sc=STORY_SCENES[storyIdx];
+  if(sc && sc.battleAfter!==undefined && sc.battleAfter!==null){
+    storyIdx++;
+    const stageIdx=sc.battleAfter;
+    if(stageIdx<0||stageIdx>=STAGES.length){showEnding();return;}
+    initBattle(stageIdx);
+    renderBattle();
+    showScreen('battle-screen');
+    if(stageIdx===3) playBGM('BGM/lastbattle.wav');
+    else startBGM();
+    // バトル演出：オーラ追加＆敵登場アニメ
+    const bs=document.getElementById('battle-screen');
+    const oldAura=bs.querySelector('.battle-aura');if(oldAura)oldAura.remove();
+    const aura=document.createElement('div');
+    aura.className='battle-aura';
+    const stg=STAGES[stageIdx];
+    aura.style.background=stg&&stg.enemy.bg?stg.enemy.bg:'linear-gradient(180deg,#ff6347,#c62828)';
+    bs.insertBefore(aura,bs.firstChild);
+    setTimeout(()=>{
+      const esp=document.getElementById('enemy-sprite');
+      if(esp){esp.classList.add('entrance');setTimeout(()=>esp.classList.remove('entrance'),600);}
+    },200);
+    return;
+  }
+  storyIdx++;
+  if(storyIdx>=STORY_SCENES.length){showEnding();return;}
+  renderStory();
+}
+
+// ============================================================
+//  BATTLE RENDER
+// ============================================================
+function renderBattle(){
+  const{enemy,activeParty,attackerIdx,hand,stage,mana,maxMana}=gs;
+  // 背景
+  document.getElementById('battle-screen').style.background=enemy.bg||'#87ceeb';
+  document.getElementById('stage-banner').textContent=`⚔️ ${stage.name}`;
+  // Enemy
+  document.getElementById('enemy-sprite').textContent=enemy.sprite;
+  document.getElementById('enemy-name').textContent=enemy.name;
+  document.getElementById('enemy-tagline').textContent=enemy.tagline;
+  const ep=Math.max(0,enemy.hp/enemy.maxHp*100);
+  document.getElementById('enemy-hp-bar').style.width=ep+'%';
+  document.getElementById('enemy-hp-text').textContent=`HP ${Math.max(0,enemy.hp)}/${enemy.maxHp}`;
+  // Party fighters
+  const partyRow=document.getElementById('party-row');
+  partyRow.innerHTML='';
+  activeParty.forEach((cat,i)=>{
+    const slot=document.createElement('div');
+    slot.className='party-slot';
+    const wrap=document.createElement('div');
+    wrap.className='cat-fighter'+(i===attackerIdx?'':' inactive');
+    wrap.id='cat-fighter-'+i;
+    wrap.innerHTML=makeCat(60,'normal',cat.type||cat.key);
+    slot.appendChild(wrap);
+    const lbl=document.createElement('div');
+    lbl.className='party-label';
+    lbl.textContent=(i===attackerIdx?'▶ ':'')+cat.name;
+    slot.appendChild(lbl);
+    partyRow.appendChild(slot);
+  });
+  // Party HP cards
+  const hpRow=document.getElementById('party-hp-row');
+  hpRow.innerHTML='';
+  activeParty.forEach((cat,i)=>{
+    const card=document.createElement('div');
+    card.className='party-hp-card';
+    const pct=Math.max(0,cat.hp/cat.maxHp*100);
+    const barClass='p-hp'+(pct<=30?' crit':pct<=50?' low':'');
+    card.innerHTML=`<div class="party-hp-name">${cat.name}</div>
+      <div class="hp-bar-wrap"><div class="hp-bar ${barClass}" style="width:${pct}%"></div></div>
+      <div class="hp-text">HP ${Math.max(0,cat.hp)}/${cat.maxHp}</div>`;
+    hpRow.appendChild(card);
+  });
+  // Attacker indicator
+  const attacker=activeParty[attackerIdx];
+  document.getElementById('atk-indicator').textContent=`▶ ${attacker.name}のターン`;
+  document.getElementById('attacker-name').textContent=attacker.name;
+  // Mana
+  const mr=document.getElementById('mana-row');mr.innerHTML='';
+  for(let i=0;i<maxMana;i++){
+    const g=document.createElement('div');
+    g.className='mana-gem '+(i<mana?'full':'empty');
+    mr.appendChild(g);
+  }
+  // Cards
+  const cr=document.getElementById('cards-row');cr.innerHTML='';
+  hand.forEach((card,idx)=>{
+    const attacker=activeParty[attackerIdx];
+    const whoOk=card.who==='any'||card.who==='haku'||(attacker&&card.who===attacker.key);
+    const ok=mana>=card.cost&&gs.playerTurn&&!gs.busy&&whoOk;
+    const rarity=card.cost<=1?'normal':card.cost===2?'rare':'sr';
+    const d=document.createElement('div');
+    d.className=`card ${card.type} ${rarity}${ok?'':' dis'}`;
+    d.innerHTML=`<div class="card-cost">${card.cost}</div>
+      <div class="card-icon">${card.icon}</div>
+      <div class="card-name">${card.name}</div>
+      <div class="card-desc">${card.desc}</div>`;
+    if(ok){
+      d.onclick=()=>{
+        // 選択フラッシュ演出
+        d.classList.add('selected');
+        setTimeout(()=>d.classList.remove('selected'),400);
+        useCard(idx);
+      };
+    }
+    cr.appendChild(d);
+  });
+  document.getElementById('btn-endturn').disabled=!gs.playerTurn||gs.busy;
+}
+
+function setLog(t){document.getElementById('battle-log-text').innerHTML=String(t).replace(/\n/g,'<br>');}
+
+// ============================================================
+//  BATTLE LOGIC
+// ============================================================
+function useCard(idx){
+  if(gs.busy||!gs.playerTurn) return;
+  const card=gs.hand[idx];
+  if(gs.mana<card.cost) return;
+  gs.busy=true;gs.mana-=card.cost;gs.hand.splice(idx,1);
+  sfx('card');
+
+  // 鳴き声
+  const attacker=gs.activeParty[gs.attackerIdx];
+  const meowType=card.sfxType||'meow';
+  if(meowType==='meow'||meowType==='meow2'||meowType==='meow3') sfx(meowType);
+  showMeow(card.meow||'にゃ！', gs.attackerIdx);
+
+  // アタックアニメ
+  const fw=document.getElementById('cat-fighter-'+gs.attackerIdx);
+  if(fw){
+    fw.classList.add('attack');
+    if(attacker.type==='sabatora'&&card.id!=='roll'){
+      const img=fw.querySelector('img');
+      if(img){img.src='haku hikkaki.PNG';setTimeout(()=>{img.src='haku.jpg';},700);}
+      showHikkakiFx();
+    }
+    if(attacker.type==='kijitora'){
+      const img=fw.querySelector('img');
+      if(img){img.src='sen.png';}
+    }
+    setTimeout(()=>fw.classList.remove('attack'),700);
+  }
+  if(card.id==='roll') showInemuriFx();
+
+  card.effect(gs);
+  renderBattle();
+  setTimeout(()=>{gs.busy=false;checkEnd();renderBattle();},700);
+}
+
+function dealDamage(gs,power,from){
+  if(from==="player"){
+    const d=Math.max(1,power-gs.enemy.defense);
+    const isCrit=d>=power&&power>=10&&Math.random()<.2;
+    const finalD=isCrit?Math.floor(d*1.5):d;
+    gs.enemy.hp-=finalD;
+    const atk=gs.activeParty[gs.attackerIdx];
+    setLog(`${atk.name}のこうげき！\n${gs.enemy.name}に ${finalD} ダメージ！💥${isCrit?' 会心の一撃！':''}` );
+    showSlashFx('enemy');
+    showSpeedLines(100,90,isCrit?'rgba(255,180,50,.9)':'rgba(255,255,255,.8)');
+    setTimeout(()=>{
+      showWhiteFlash();
+      showDmgNum(finalD,'enemy','dmg',isCrit);
+      showHitFx('enemy',isCrit?'#ff6d00':'#ff5252');
+      showHitFlash('enemy',isCrit?'rgba(255,109,0,.4)':'rgba(255,50,50,.25)');
+      showImpactKanji('enemy',isCrit?'crit':'norm');
+      shakeScreen(isCrit?.45:.3);
+      if(isCrit)showCritText();
+    },180);
+    sfx('attack');
+    const el=document.getElementById('enemy-sprite');
+    el.classList.add('hurt');setTimeout(()=>el.classList.remove('hurt'),500);
+  } else {
+    const d=Math.max(1,power-gs.activeParty[gs.attackerIdx].defense);
+    gs.activeParty[gs.attackerIdx].hp-=d;
+    setLog(`${gs.enemy.name}のこうげき！\n${gs.activeParty[gs.attackerIdx].name}に ${d} ダメージ！`);
+    showSpeedLines(180,220,'rgba(255,100,80,.8)');
+    setTimeout(()=>{
+      showWhiteFlash();
+      showDmgNum(d,'player','dmg');
+      showHitFx('player','#ff8a80');
+      showHitFlash('player','rgba(255,50,50,.2)');
+      showImpactKanji('player','norm');
+      shakeScreen(.32);
+    },120);
+    sfx('hurt');
+    const fw=document.getElementById('cat-fighter-'+gs.attackerIdx);
+    if(fw){fw.style.filter='brightness(2.5) saturate(0)';setTimeout(()=>{if(fw)fw.style.filter='';},350);}
+  }
+}
+
+function healCat(gs,idx,amt){
+  const cat=gs.activeParty[idx];
+  cat.hp=Math.min(cat.maxHp,cat.hp+amt);
+  setLog(`${cat.name}のHP が ${amt} 回復！`);
+  showDmgNum(amt,'player','heal');
+  showImpactKanji('player','heal');
+  showHitFx('player','#69f0ae');
+}
+
+function showDmgNum(v,tgt,type,crit){
+  const el=document.createElement('div');
+  el.className=`dmg-num ${type}${crit?' crit':''}`;
+  el.textContent=type==='heal'?`+${v}`:`-${v}`;
+  const f=document.querySelector('.battle-field');
+  const baseX=tgt==='enemy'?60:130;const baseY=tgt==='enemy'?44:175;
+  el.style.left=(baseX+(Math.random()*24-12))+'px';
+  el.style.top=(baseY+(Math.random()*14-7))+'px';
+  f.appendChild(el);setTimeout(()=>el.remove(),1100);
+}
+
+function showSpeedLines(cx,cy,color){
+  const s=document.getElementById('battle-screen');
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 420 780');
+  svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:130;animation:speedLinesAnim .45s ease forwards;';
+  const count=28;
+  for(let i=0;i<count;i++){
+    const angle=(i/count)*Math.PI*2;
+    const r0=25+Math.random()*15;const r1=130+Math.random()*90;
+    const ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',cx+Math.cos(angle)*r0);ln.setAttribute('y1',cy+Math.sin(angle)*r0);
+    ln.setAttribute('x2',cx+Math.cos(angle)*r1);ln.setAttribute('y2',cy+Math.sin(angle)*r1);
+    ln.setAttribute('stroke',color||'rgba(255,255,255,.75)');
+    ln.setAttribute('stroke-width',(.5+Math.random()*2).toFixed(1));
+    svg.appendChild(ln);
+  }
+  s.appendChild(svg);setTimeout(()=>svg.remove(),500);
+}
+
+const KANJI_NORM=['ドカッ！','バキッ！','ズドン！','ガツン！','ドン！'];
+const KANJI_CRIT=['ドガーン！','クリティカル！','会心の一撃！','ズドーン！'];
+const KANJI_HEAL=['キラーン✨','回復！','ぷわーん♪'];
+function showImpactKanji(tgt,type){
+  const f=document.querySelector('.battle-field');
+  const el=document.createElement('div');
+  el.className='impact-kanji';
+  const isCrit=type==='crit';const isHeal=type==='heal';
+  const list=isHeal?KANJI_HEAL:isCrit?KANJI_CRIT:KANJI_NORM;
+  el.textContent=list[Math.floor(Math.random()*list.length)];
+  const cx=tgt==='enemy'?'38%':'52%';const cy=tgt==='enemy'?'22%':'55%';
+  const col=isHeal?'#69f0ae':isCrit?'#ff6d00':'#ff1744';
+  const glow=isHeal?'#69f0ae':isCrit?'#ff9800':'#ff1744';
+  el.style.cssText=`left:${cx};top:${cy};font-size:${isCrit?30:22}px;color:${col};text-shadow:2px 2px 0 rgba(0,0,0,.9),0 0 ${isCrit?24:14}px ${glow};`;
+  f.appendChild(el);setTimeout(()=>el.remove(),850);
+}
+
+function showWhiteFlash(){
+  const el=document.createElement('div');
+  el.style.cssText='position:absolute;inset:0;background:white;pointer-events:none;z-index:195;animation:whiteFlash .2s ease forwards;';
+  document.getElementById('battle-screen').appendChild(el);setTimeout(()=>el.remove(),250);
+}
+
+function shakeScreen(intensity){
+  const s=document.getElementById('battle-screen');
+  s.style.animation='none';
+  s.offsetHeight;
+  s.style.animation=`screenShake ${intensity||0.35}s ease`;
+  setTimeout(()=>s.style.animation='',400);
+}
+
+function showHitFx(tgt,color){
+  const f=document.querySelector('.battle-field');
+  const cx=tgt==='enemy'?72:148;const cy=tgt==='enemy'?55:190;
+  // impact ring
+  const ring=document.createElement('div');
+  ring.style.cssText=`position:absolute;left:${cx}px;top:${cy}px;width:80px;height:80px;border-radius:50%;border:3px solid ${color||'#ff5252'};pointer-events:none;z-index:160;animation:impactRing .5s ease-out forwards;`;
+  f.appendChild(ring);setTimeout(()=>ring.remove(),550);
+  // particles
+  const count=tgt==='enemy'?12:8;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    const angle=(i/count)*Math.PI*2;const dist=40+Math.random()*40;
+    const tx=Math.cos(angle)*dist;const ty=Math.sin(angle)*dist;
+    const size=3+Math.random()*5;
+    p.style.cssText=`position:absolute;left:${cx+Math.random()*16-8}px;top:${cy+Math.random()*16-8}px;width:${size}px;height:${size}px;border-radius:50%;background:${color||'#ff5252'};pointer-events:none;z-index:155;--tx:${tx}px;--ty:${ty}px;animation:particleFly ${.4+Math.random()*.3}s ease-out forwards;`;
+    f.appendChild(p);setTimeout(()=>p.remove(),800);
+  }
+}
+
+function showSlashFx(tgt){
+  const f=document.querySelector('.battle-field');
+  const cx=tgt==='enemy'?80:150;const cy=tgt==='enemy'?60:185;
+  for(let i=0;i<3;i++){
+    const sl=document.createElement('div');
+    const angle=-35+i*18;const len=50+i*10;
+    sl.style.cssText=`position:absolute;left:${cx-len/2+i*6}px;top:${cy-3+i*6}px;width:${len}px;height:${3-i}px;background:linear-gradient(90deg,transparent,white,rgba(255,200,100,.6));border-radius:2px;pointer-events:none;z-index:165;--sr:${angle}deg;animation:slashSwipe .3s ease-out ${i*.06}s forwards;opacity:0;`;
+    f.appendChild(sl);setTimeout(()=>sl.remove(),500);
+  }
+}
+
+function showHitFlash(tgt,color){
+  const el=document.createElement('div');
+  el.style.cssText=`position:absolute;inset:0;background:${color||'rgba(255,50,50,.3)'};pointer-events:none;z-index:145;animation:hitFlash .25s ease forwards;`;
+  document.getElementById('battle-screen').appendChild(el);setTimeout(()=>el.remove(),300);
+}
+
+function showHikkakiFx(){
+  const el=document.createElement('img');
+  el.src='haku hikkaki.PNG';
+  el.style.cssText=`position:absolute;left:50%;top:45%;width:85%;max-width:340px;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:200;animation:hikkakiPop .75s cubic-bezier(.22,.61,.36,1) forwards;border-radius:12px;`;
+  document.getElementById('battle-screen').appendChild(el);
+  setTimeout(()=>el.remove(),800);
+}
+function showInemuriFx(){
+  const el=document.createElement('img');
+  el.src='haku inemuri.png';
+  el.style.cssText=`position:absolute;left:50%;top:45%;width:85%;max-width:340px;transform:translate(-50%,-50%) scale(0.3);pointer-events:none;z-index:200;animation:inemuriFloat 1.6s ease-in-out forwards;border-radius:12px;`;
+  document.getElementById('battle-screen').appendChild(el);
+  setTimeout(()=>el.remove(),1700);
+}
+
+function showCritText(){
+  const f=document.querySelector('.battle-field');
+  const el=document.createElement('div');
+  el.textContent='CRITICAL!!';
+  el.style.cssText=`position:absolute;left:50%;top:40%;font-size:22px;font-weight:900;color:#ff6d00;text-shadow:0 0 12px #ff6d00,2px 2px 0 #7f3000;pointer-events:none;z-index:170;animation:critBoom .8s ease forwards;`;
+  f.appendChild(el);setTimeout(()=>el.remove(),850);
+}
+
+function showMeow(text,catIdx){
+  const el=document.createElement('div');
+  el.className='meow-bubble';
+  el.textContent=text;
+  const f=document.querySelector('.battle-field');
+  el.style.left=(50+catIdx*80)+'px';
+  el.style.top='120px';
+  f.appendChild(el);setTimeout(()=>el.remove(),1200);
+}
+
+function showVomitFx(){
+  const field=document.querySelector('.battle-field');
+  for(let i=0;i<14;i++){
+    const d=document.createElement('div');
+    d.textContent=Math.random()<.5?'🤢':'💚';
+    d.style.cssText=`position:absolute;font-size:${14+Math.random()*20}px;left:${20+Math.random()*180}px;top:${10+Math.random()*90}px;pointer-events:none;z-index:150;animation:vomitDrop ${.7+Math.random()*.4}s ease forwards;animation-delay:${i*.05}s;opacity:0;`;
+    field.appendChild(d);setTimeout(()=>d.remove(),1400);
+  }
+  showHitFx('enemy','#4caf50');
+  shakeScreen(.4);
+  const fl=document.createElement('div');
+  fl.style.cssText=`position:absolute;inset:0;background:rgba(80,200,50,.3);z-index:140;pointer-events:none;animation:greenFlash .6s ease forwards;`;
+  document.getElementById('battle-screen').appendChild(fl);setTimeout(()=>fl.remove(),600);
+}
+
+function showTurnFlash(txt){
+  const el=document.createElement('div');
+  el.className='turn-flash';
+  const inner=document.createElement('div');
+  inner.className='turn-flash-inner';inner.textContent=txt;
+  el.appendChild(inner);
+  document.getElementById('battle-screen').appendChild(el);
+  setTimeout(()=>el.remove(),1400);
+}
+
+function endTurn(){
+  if(gs.busy||!gs.playerTurn)return;
+  gs.playerTurn=false;gs.busy=true;
+  // 次の攻撃キャラへ
+  gs.attackerIdx=(gs.attackerIdx+1)%gs.activeParty.length;
+  showTurnFlash('👹 鬼のターン！');
+  setTimeout(()=>{
+    if(gs.enemy.stunned){
+      setLog(`${gs.enemy.name}はフリーズして動けない！😳`);
+      gs.enemy.stunned=false;
+    } else {
+      // 鬼は生きているパーティメンバーをランダムに攻撃
+      const alive=gs.activeParty.filter(c=>c.hp>0);
+      if(alive.length>0){
+        const target=alive[Math.floor(Math.random()*alive.length)];
+        const tidx=gs.activeParty.indexOf(target);
+        const d=Math.max(1,gs.enemy.attack-target.defense);
+        target.hp=Math.max(0,target.hp-d);
+        setLog(`${gs.enemy.name}のこうげき！\n${target.name}に ${d} ダメージ！`);
+        showSpeedLines(180,220,'rgba(255,80,60,.8)');
+        setTimeout(()=>{
+          showWhiteFlash();
+          showDmgNum(d,'player','dmg');
+          showHitFx('player','#ff8a80');
+          showHitFlash('player','rgba(255,50,50,.2)');
+          showImpactKanji('player','norm');
+          shakeScreen(.32);
+        },140);
+        sfx('hurt');
+        const fw=document.getElementById('cat-fighter-'+tidx);
+        if(fw){fw.style.filter='brightness(2.5) saturate(0)';setTimeout(()=>{if(fw)fw.style.filter='';},350);}
+      }
+    }
+    renderBattle();
+    setTimeout(()=>{
+      if(!checkEnd()){
+        gs.playerTurn=true;gs.busy=false;
+        drawHand();
+        setLog(`${gs.activeParty[gs.attackerIdx].name}のターン！\nカードを選ぼう！`);
+        showTurnFlash(`🐱 ${gs.activeParty[gs.attackerIdx].name}のターン！`);
+        renderBattle();
+      }
+    },900);
+  },1300);
+}
+
+function checkEnd(){
+  if(gs.enemy.hp<=0){
+    gs.busy=true;sfx('win');
+    // 体力を引き継ぐ
+    gs.activeParty.forEach(cat=>{partyHP[cat.key].hp=Math.max(1,cat.hp);});
+    setTimeout(()=>showResult('win'),700);return true;
+  }
+  const allDead=gs.activeParty.every(c=>c.hp<=0);
+  if(allDead){
+    gs.busy=true;sfx('lose');
+    setTimeout(()=>showResult('lose'),700);return true;
+  }
+  return false;
+}
+
+// ============================================================
+//  RESULT
+// ============================================================
+function showResult(out){
+  const s=document.getElementById('result-screen');
+  s.className=`screen ${out}`;s.classList.add('active');
+  // 猫表示
+  const rc=document.getElementById('result-cats');rc.innerHTML='';
+  party.forEach(k=>{
+    const d=document.createElement('div');
+    d.innerHTML=makeCat(60,out==='win'?'happy':'hurt',CATS[k].type);
+    rc.appendChild(d);
+  });
+  if(out==='win'){
+    document.getElementById('result-title').textContent='しょうり！';
+    document.getElementById('result-title').className='result-title win';
+    const winMsg=gs.stage&&gs.stage.enemy&&gs.stage.enemy.winMsg
+      ? gs.stage.enemy.winMsg
+      : (gs.enemy?gs.enemy.name+'を倒した！':'やったー！');
+    document.getElementById('result-msg').innerHTML=winMsg.replace(/\n/g,'<br>');
+    const rw=document.getElementById('result-reward');
+    rw.style.display='block';rw.textContent=`🎁 ${gs.stage.drops}`;
+    const isLast=gs.stageIdx>=STAGES.length-1;
+    document.getElementById('btn-next').textContent=isLast?'🏆 エンディングへ！':'つぎへ ▶';
+  } else {
+    document.getElementById('result-title').textContent='全員やられた…';
+    document.getElementById('result-title').className='result-title lose';
+    document.getElementById('result-msg').textContent='ハクたちはやられてしまった…\nもう一度挑戦だ！';
+    document.getElementById('result-reward').style.display='none';
+    document.getElementById('btn-next').textContent='🔄 もう一度！';
+  }
+  startIdouBGM();
+  showScreen('result-screen');
+}
+
+function afterBattle(){
+  const win=document.getElementById('result-screen').className.includes('win');
+  if(!win){
+    // 体力全回復してやり直し
+    Object.keys(partyHP).forEach(k=>{partyHP[k].hp=partyHP[k].maxHp;});
+    initBattle(gs.stageIdx);renderBattle();
+    setLog('もう一度だ！カードを選ぼう！');
+    showScreen('battle-screen');return;
+  }
+  const nextStory=gs.stage&&gs.stage.storyAfter!=null?gs.stage.storyAfter:null;
+  if(nextStory===-1||nextStory===null){showEnding();return;}
+  if(nextStory>=STORY_SCENES.length){showEnding();return;}
+  storyIdx=nextStory;
+  try{renderStory();}catch(e){console.error('renderStory error:',e);showEnding();}
+}
+
+// ============================================================
+//  ENDING
+// ============================================================
+function showEnding(){
+  const ec=document.getElementById('ending-cats');ec.innerHTML='';
+  party.forEach(k=>{
+    const d=document.createElement('div');
+    d.innerHTML=makeCat(66,'happy',CATS[k].type);
+    ec.appendChild(d);
+  });
+  const names=party.map(k=>CATS[k].name).join('・');
+  document.getElementById('ending-text').textContent=
+    `${names}は力を合わせて\n鬼の大将を倒し、\n黄金のまたたびを手に入れた！\n\nにゃ〜〜〜！ 最高の冒険だった！\n\n🌟 クリアおめでとう！ 🌟`;
+  sfx('win');
+  playBGM('BGM/ending.mp3');
+  showScreen('ending-screen');
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+// タイトル星
+(()=>{
+  const c=document.getElementById('title-stars');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${1+Math.random()*3}px;height:${1+Math.random()*3}px;animation-delay:${Math.random()*2}s;animation-duration:${1.5+Math.random()*2}s;`;
+    c.appendChild(s);
+  }
+})();
+
+// タイトルのハクSVG
+document.getElementById('title-haku-svg').innerHTML=makeCat(110,'normal','sabatora');
+
+// タイトルBGM：最初のタップで再生
+document.addEventListener('click',function onFirstClick(){
+  startTitleBGM();
+  document.removeEventListener('click',onFirstClick);
+},{once:true});
+</script>
+</body>
+</html>
