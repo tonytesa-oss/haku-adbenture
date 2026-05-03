@@ -299,6 +299,12 @@ function makeCat(size, expr, type){
     else if(expr==='happy') filter='brightness(1.2) saturate(1.3)';
     return `<img src="sen.png" width="${size}" height="${size}" style="object-fit:cover;border-radius:50%;filter:${filter};display:block;" />`;
   }
+  if(type==='hachiware'){
+    let filter='';
+    if(expr==='hurt') filter='brightness(2) sepia(1) saturate(5) hue-rotate(-20deg)';
+    else if(expr==='happy') filter='brightness(1.2) saturate(1.3)';
+    return `<img src="kii.png" width="${size}" height="${size}" style="object-fit:cover;border-radius:50%;filter:${filter};display:block;" />`;
+  }
   // カラーパレット
   const C={
     sabatora:{base:'#b8b8a0',stripe:'#5a5a48',white:'#f0f0e8',nose:'#e8a0a0',eye:'#7dc87d'},
