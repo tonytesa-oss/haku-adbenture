@@ -62,6 +62,8 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:#0a0a14;display:flex;ju
 @keyframes whiteFlash{0%{opacity:1;}100%{opacity:0;}}
 @keyframes battleAuraPulse{0%,100%{opacity:.08;}50%{opacity:.22;}}
 @keyframes hikkakiPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-15deg);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.35) rotate(8deg);}55%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg);}80%{opacity:.8;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05) rotate(0deg);}}
+@keyframes sengiriPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.2) rotate(-20deg);}15%{opacity:1;transform:translate(-50%,-50%) scale(1.4) rotate(6deg);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-3deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05) rotate(0deg);}}
+@keyframes lightningFlash{0%,100%{opacity:0;}10%,30%,50%,70%,90%{opacity:1;}20%,40%,60%,80%{opacity:0.3;}}
 @keyframes inemuriFloat{0%{opacity:0;transform:translate(-50%,-50%) scale(0.3) translateY(40px);}25%{opacity:1;transform:translate(-50%,-50%) scale(1.05) translateY(-8px);}70%{opacity:1;transform:translate(-50%,-50%) scale(1) translateY(4px);}100%{opacity:0;transform:translate(-50%,-50%) scale(0.95) translateY(-10px);}}
 @keyframes enemyEntrance{0%{opacity:0;transform:translateX(60px) scale(1.4);}60%{transform:translateX(-5px) scale(.97);}100%{opacity:1;transform:translateX(0) scale(1);}}
 .impact-kanji{position:absolute;z-index:175;pointer-events:none;font-weight:900;letter-spacing:-1px;animation:kanjiPop .8s cubic-bezier(.22,.61,.36,1) forwards;}
@@ -975,6 +977,7 @@ function useCard(idx){
     setTimeout(()=>fw.classList.remove('attack'),700);
   }
   if(card.id==='roll') showInemuriFx();
+  if(card.id==='senSlash') showSengiriFx();
 
   card.effect(gs);
   renderBattle();
@@ -1135,6 +1138,25 @@ function showHikkakiFx(){
   el.style.cssText=`position:absolute;left:50%;top:45%;width:85%;max-width:340px;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:200;animation:hikkakiPop .75s cubic-bezier(.22,.61,.36,1) forwards;border-radius:12px;`;
   document.getElementById('battle-screen').appendChild(el);
   setTimeout(()=>el.remove(),800);
+}
+function showSengiriFx(){
+  const bs=document.getElementById('battle-screen');
+  // 雷フラッシュ
+  const flash=document.createElement('div');
+  flash.style.cssText=`position:absolute;inset:0;background:linear-gradient(135deg,rgba(180,120,255,.5),rgba(100,180,255,.4));pointer-events:none;z-index:195;animation:lightningFlash .4s ease forwards;`;
+  bs.appendChild(flash);setTimeout(()=>flash.remove(),450);
+  // 雷線エフェクト
+  for(let i=0;i<4;i++){
+    const bolt=document.createElement('div');
+    const x=30+Math.random()*40;
+    bolt.style.cssText=`position:absolute;left:${x}%;top:0;width:2px;height:${50+Math.random()*40}%;background:linear-gradient(to bottom,rgba(200,150,255,0),rgba(220,180,255,1),rgba(150,220,255,.8),rgba(200,150,255,0));pointer-events:none;z-index:196;animation:lightningFlash .35s ease ${i*.07}s forwards;border-radius:2px;filter:blur(1px);`;
+    bs.appendChild(bolt);setTimeout(()=>bolt.remove(),500);
+  }
+  // セン切り画像
+  const el=document.createElement('img');
+  el.src='sengiri.png';
+  el.style.cssText=`position:absolute;left:50%;top:45%;width:80%;max-width:320px;transform:translate(-50%,-50%) scale(0.2);pointer-events:none;z-index:200;animation:sengiriPop .6s cubic-bezier(.22,.61,.36,1) forwards;border-radius:12px;`;
+  bs.appendChild(el);setTimeout(()=>el.remove(),700);
 }
 function showInemuriFx(){
   const el=document.createElement('img');
