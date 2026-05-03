@@ -959,7 +959,7 @@ function useCard(idx){
     fw.classList.add('attack');
     if(attacker.type==='sabatora'&&card.id!=='roll'){
       const img=fw.querySelector('img');
-      if(img){img.src='haku hikkaki.PNG';setTimeout(()=>{img.src='haku.jpg';},700);}
+      if(img){img.src='haku hikkaki.png';setTimeout(()=>{img.src='haku.jpg';},700);}
       showHikkakiFx();
     }
     if(attacker.type==='kijitora'){
@@ -1125,7 +1125,7 @@ function showHitFlash(tgt,color){
 
 function showHikkakiFx(){
   const el=document.createElement('img');
-  el.src='haku hikkaki.PNG';
+  el.src='haku hikkaki.png';
   el.style.cssText=`position:absolute;left:50%;top:45%;width:85%;max-width:340px;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:200;animation:hikkakiPop .75s cubic-bezier(.22,.61,.36,1) forwards;border-radius:12px;`;
   document.getElementById('battle-screen').appendChild(el);
   setTimeout(()=>el.remove(),800);
